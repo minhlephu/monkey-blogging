@@ -1,5 +1,5 @@
 import { Label } from "components/label";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { Input } from "components/input";
@@ -8,6 +8,12 @@ import { IconEyeClose, IconEyeOpen } from "components/icon";
 import { Button } from "components/button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth, db } from "firebase-app/firebase-config";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
 const SignUpPageStyles = styled.div`
   min-height: 100vh;
   padding: 40px;
@@ -37,6 +43,7 @@ const schema = yup.object({
     .required("Please enter your password"),
 });
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -46,16 +53,49 @@ const SignUpPage = () => {
     mode: "onChange",
     resolver: yupResolver(schema),
   });
-  const handleSignUp = (values) => {
-    if (!isValid) return;
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 5000);
-    });
-  };
-  const [togglePassword, setTogglePassword] = useState(false);
 
+  // const handleSignUp = async (values) => {
+  //   if (!isValid) return;
+  //   console.log(values);
+  //   const user = await createUserWithEmailAndPassword(
+  //     auth,
+  //     values.email,
+  //     values.password
+  //   );
+  //   await updateProfile(auth.currentUser, {
+  //     displayName: values.fullname,
+  //   });
+  //   toast.success("Register successfully");
+  // };
+
+  const handleSignUp = async (values) => {
+    if (!isValid) return;
+    await createUserWithEmailAndPassword(auth, values.email, values.password);
+    await updateProfile(auth.currentUser, {
+      displayName: values.fullname,
+    });
+    const colRef = collection(db, "users");
+
+    await addDoc(colRef, {
+      fullname: values.fullname,
+      email: values.email,
+      password: values.password,
+    });
+
+    toast.success("Register successfully!!!");
+    navigate("/");
+  };
+
+  const [togglePassword, setTogglePassword] = useState(false);
+  useEffect(() => {
+    const arrErroes = Object.values(errors);
+    if (arrErroes.length > 0) {
+      toast.error(arrErroes[0]?.message, {
+        pauseOnHover: false,
+        delay: 0,
+      });
+    }
+  }, [errors]);
   return (
     <SignUpPageStyles>
       <div className="container">
