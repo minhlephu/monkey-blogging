@@ -1,6 +1,7 @@
 import LoadingSpinner from "components/loading/LoadingSpinner";
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 const ButtonStyles = styled.button`
   cursor: pointer;
   padding: 0 25px;
@@ -24,6 +25,12 @@ const ButtonStyles = styled.button`
     pointer-events: none;
   }
 `;
+/**
+ * @requires
+ * @param {string} type Type of button 'button' | 'submit'
+ * @returns
+ */
+
 const Button = ({
   type = "button",
   onClick = () => {},
@@ -38,5 +45,7 @@ const Button = ({
     </ButtonStyles>
   );
 };
-
+Button.propTypes = {
+  type: PropTypes.oneOf(["button", "submit"]).isRequired,
+};
 export default Button;
