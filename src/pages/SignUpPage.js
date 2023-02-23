@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "firebase-app/firebase-config";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import AuthenticationPage from "./AuthenticationPage";
 
 const schema = yup.object({
@@ -69,7 +69,11 @@ const SignUpPage = () => {
     toast.success("Register successfully!!!");
     navigate("/");
   };
+  useEffect(() => {
+    document.title = "Register Page";
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [togglePassword, setTogglePassword] = useState(false);
   useEffect(() => {
     const arrErroes = Object.values(errors);
@@ -134,6 +138,9 @@ const SignUpPage = () => {
             )}
           </Input>
         </Field>
+        <div className="have-account">
+          You already have an account? <NavLink to={"/sign-in"}>Login</NavLink>{" "}
+        </div>
         <Button
           type="submit"
           style={{
