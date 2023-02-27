@@ -1,17 +1,19 @@
 import { Button } from "components/button";
+import { useAuth } from "contexts/auth-context";
 import React from "react";
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 const menuLinks = [
   {
-    url: "/#",
+    url: "/",
     title: "Home",
   },
   {
-    url: "/#",
+    url: "/blog",
     title: "Blog",
   },
   {
-    url: "/#",
+    url: "/contact",
     title: "Contact",
   },
 ];
@@ -31,12 +33,13 @@ const HeaderStyles = styled.header`
     gap: 20px;
     margin-left: 40px;
     list-style: none;
+    font-weight: 600;
   }
 
   .search {
     margin-left: auto;
     padding: 15px 25px;
-    border: 1px solid #eee;
+    border: 1px solid #ccc;
     border-radius: 8px;
     width: 100%;
     max-width: 320px;
@@ -44,6 +47,7 @@ const HeaderStyles = styled.header`
     display: flex;
     align-items: center;
     padding-right: 50px;
+    margin-right: 20px;
   }
   .search-input {
     flex: 1;
@@ -58,20 +62,27 @@ const HeaderStyles = styled.header`
     margin-left: 32px;
   }
 `;
+function getLastName(name) {
+  if (!name) return "User";
+  const length = name.split(" ").length;
+  return name.split(" ")[length - 1];
+}
 const Header = () => {
+  const { userInfo } = useAuth();
+
   return (
     <HeaderStyles>
       <div className="container">
         <div className="header-main">
-          <a href="/">
+          <NavLink to="/">
             <img srcSet="/logo.png 2x" alt="monkey-blogging" className="logo" />
-          </a>
+          </NavLink>
           <ul className="menu">
             {menuLinks.map((item) => (
               <li className="menu-item" key={item.title}>
-                <a href={item.url} className="menu-link">
+                <NavLink to={item.url} className="menu-link">
                   {item.title}
-                </a>
+                </NavLink>
               </li>
             ))}
           </ul>
@@ -113,9 +124,24 @@ const Header = () => {
               </svg>
             </span>
           </div>
-          <Button style={{ maxWidth: 200 }} className="header-button">
-            SignUp
-          </Button>
+          {!userInfo ? (
+            <Button
+              to="/sign-up"
+              type="button"
+              style={{ maxWidth: 200 }}
+              height="56px"
+              className="header-button"
+            >
+              SignUp
+            </Button>
+          ) : (
+            <div className="header-auth">
+              <span>Welcome back, </span>
+              <strong className="text-primary">
+                {getLastName(userInfo?.displayName)}
+              </strong>
+            </div>
+          )}
         </div>
       </div>
     </HeaderStyles>
