@@ -1,13 +1,12 @@
 import LoadingSpinner from "components/loading/LoadingSpinner";
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 const ButtonStyles = styled.button`
   cursor: pointer;
   padding: 0 25px;
   line-height: 1;
-  color: white;
   border-radius: 8px;
   font-weight: 600;
   font-size: 18px;
@@ -15,11 +14,19 @@ const ButtonStyles = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: linear-gradient(
-    to right bottom,
-    ${(props) => props.theme.primary},
-    ${(props) => props.theme.secondary}
-  );
+  background-color: white;
+  color: ${(props) => props.theme.primary};
+  ${(props) =>
+    props.kind === "primary" &&
+    css`
+      color: white;
+      background-image: linear-gradient(
+        to right bottom,
+        ${(props) => props.theme.primary},
+        ${(props) => props.theme.secondary}
+      );
+    `};
+
   &:disabled {
     opacity: 0.5;
     pointer-events: none;
@@ -56,6 +63,6 @@ const Button = ({
   );
 };
 Button.propTypes = {
-  type: PropTypes.oneOf(["button", "submit"]).isRequired,
+  type: PropTypes.oneOf(["button", "submit"]),
 };
 export default Button;
