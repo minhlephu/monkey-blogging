@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import Input from "./Input";
 import { IconEyeClose, IconEyeOpen } from "components/icon";
 
@@ -6,7 +6,7 @@ const InputPasswordToggle = ({ control }) => {
   const [togglePassword, setTogglePassword] = useState(false);
   if (!control) return null;
   return (
-    <div>
+    <Fragment>
       <Input
         name="password"
         type={togglePassword ? "text" : "password"}
@@ -20,7 +20,7 @@ const InputPasswordToggle = ({ control }) => {
           <IconEyeOpen onClick={() => setTogglePassword(false)}></IconEyeOpen>
         )}
       </Input>
-    </div>
+    </Fragment>
   );
 };
 

@@ -41,7 +41,9 @@ const HomeBanner = () => {
               officia expedita eius minus distinctio qui numquam quo ratione nam
               fugit eos laborum quod ipsam?
             </p>
-            <Button to="/sign-up">Get started</Button>
+            <Button to="/sign-up" kind="secondary">
+              Get started
+            </Button>
           </div>
           <div className="banner-image">
             <img src="/img-banner.png" alt="banner" />

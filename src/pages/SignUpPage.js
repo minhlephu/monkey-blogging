@@ -39,20 +39,6 @@ const SignUpPage = () => {
     resolver: yupResolver(schema),
   });
 
-  // const handleSignUp = async (values) => {
-  //   if (!isValid) return;
-  //   console.log(values);
-  //   const user = await createUserWithEmailAndPassword(
-  //     auth,
-  //     values.email,
-  //     values.password
-  //   );
-  //   await updateProfile(auth.currentUser, {
-  //     displayName: values.fullname,
-  //   });
-  //   toast.success("Register successfully");
-  // };
-
   const handleSignUp = async (values) => {
     if (!isValid) return;
     await createUserWithEmailAndPassword(auth, values.email, values.password);
