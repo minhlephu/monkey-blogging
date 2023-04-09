@@ -1,17 +1,16 @@
 import { Label } from "components/label";
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "components/input";
 import { Field } from "components/field";
-import { IconEyeClose, IconEyeOpen } from "components/icon";
+
 import { Button } from "components/button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "firebase-app/firebase-config";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthenticationPage from "./AuthenticationPage";
 import InputPasswordToggle from "components/input/InputPasswordToggle";
@@ -33,7 +32,6 @@ const SignUpPage = () => {
     control,
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
-    watch,
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
@@ -45,9 +43,7 @@ const SignUpPage = () => {
     await updateProfile(auth.currentUser, {
       displayName: values.fullname,
     });
-    const colRef = collection(db, "users");
-
-    await addDoc(colRef, {
+    await setDoc(doc(db, "users", auth.currentUser.uid), {
       fullname: values.fullname,
       email: values.email,
       password: values.password,
