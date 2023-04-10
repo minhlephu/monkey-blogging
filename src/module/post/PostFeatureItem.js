@@ -6,6 +6,7 @@ import PostMeta from "./PostMeta";
 import PostImage from "./PostImage";
 import { db } from "firebase-app/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
+import slugify from "slugify";
 const PostFeatureItemStyles = styled.div`
   width: 100%;
   border-radius: 16px;
@@ -74,6 +75,10 @@ const PostFeatureItem = ({ data }) => {
     }
     fetchUser();
   }, [data.userId]);
+  const date = data?.createAt?.seconds
+    ? new Date(data?.createAt?.seconds * 1000)
+    : new Date();
+  const formatDate = new Date(date).toLocaleDateString("vi-VI");
   return (
     <PostFeatureItemStyles>
       <PostImage url={data.image} alt="unsplash"></PostImage>
@@ -81,8 +86,14 @@ const PostFeatureItem = ({ data }) => {
       <div className="post-overlay"></div>
       <div className="post-content">
         <div className="post-top">
-          {category?.name && <PostCategory>{category.name}</PostCategory>}
-          <PostMeta authorName={user?.fullname}></PostMeta>
+          {category?.name && (
+            <PostCategory to={category.slug}>{category.name}</PostCategory>
+          )}
+          <PostMeta
+            to={slugify(user?.fullname || "", { lower: true })}
+            authorName={user?.fullname}
+            date={formatDate}
+          ></PostMeta>
         </div>
         <PostTitle size="big">{data.title}</PostTitle>
       </div>

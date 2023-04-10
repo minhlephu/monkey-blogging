@@ -28,8 +28,7 @@ const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
   const { userInfo } = useAuth();
-  const [categories, setCategories] = useState([]);
-  const [selectCategory, setSelectCategory] = useState("");
+
   const { control, watch, setValue, handleSubmit, getValues, reset } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -50,29 +49,39 @@ const PostAddNew = () => {
     image,
     progress,
   } = useFirebaseImage(setValue, getValues);
+  const [categories, setCategories] = useState([]);
+  const [selectCategory, setSelectCategory] = useState("");
+  const [loading, setLoading] = useState(false);
   const addPostHandler = async (values) => {
-    const cloneValues = { ...values };
-    cloneValues.slug = slugify(values.slug || values.title);
-    cloneValues.status = Number(values.status);
+    setLoading(true);
+    try {
+      const cloneValues = { ...values };
+      cloneValues.slug = slugify(values.slug || values.title);
+      cloneValues.status = Number(values.status);
 
-    const colRef = collection(db, "posts");
-    await addDoc(colRef, {
-      ...cloneValues,
-      image,
-      userId: userInfo.uid,
-      createdAt: serverTimestamp(),
-    });
-    toast.success("Create new post successfully!");
-    reset({
-      title: "",
-      slug: "",
-      status: 2,
-      categoryId: "",
-      hot: false,
-      image: "",
-    });
-    handleResetUpload();
-    setSelectCategory({});
+      const colRef = collection(db, "posts");
+      await addDoc(colRef, {
+        ...cloneValues,
+        image,
+        userId: userInfo.uid,
+        createdAt: serverTimestamp(),
+      });
+      toast.success("Create new post successfully!");
+      reset({
+        title: "",
+        slug: "",
+        status: 2,
+        categoryId: "",
+        hot: false,
+        image: "",
+      });
+      handleResetUpload();
+      setSelectCategory({});
+    } catch (error) {
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     async function getData() {
@@ -90,6 +99,9 @@ const PostAddNew = () => {
     }
 
     getData();
+  }, []);
+  useEffect(() => {
+    document.title = "Monkey Blogging - Add new post";
   }, []);
 
   const handleSelectOption = (item) => {
@@ -192,7 +204,12 @@ const PostAddNew = () => {
 
           <Field></Field>
         </div>
-        <Button type="submit" className="mx-auto primary">
+        <Button
+          type="submit"
+          className="mx-auto primary w-[250px]"
+          isLoading={loading}
+          disabled={loading}
+        >
           Add new post
         </Button>
       </form>
