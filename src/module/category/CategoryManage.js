@@ -17,40 +17,43 @@ import { categoryStatus } from "utils/constants";
 // import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import LabelStatus from "components/label/LabelStatus";
+import Swal from "sweetalert2";
 
 const CategoryManage = () => {
   const [categoryList, setCategoryList] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
     const colRef = collection(db, "categories");
+
     onSnapshot(colRef, (snapshot) => {
-      let results = [];
+      let result = [];
       snapshot.forEach((doc) => {
-        results.push({
+        result.push({
           id: doc.id,
           ...doc.data(),
         });
       });
-      setCategoryList(results);
+      setCategoryList(result);
     });
   }, []);
-  // const handleDeleteCategory = async (docId) => {
-  //   const colRef = doc(db, "categories", docId);
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "You won't be able to revert this!",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#3085d6",
-  //     cancelButtonColor: "#d33",
-  //     confirmButtonText: "Yes, delete it!",
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       await deleteDoc(colRef);
-  //       Swal.fire("Deleted!", "Your file has been deleted.", "success");
-  //     }
-  //   });
-  // };
+  const handleDeleteCategory = async (docId) => {
+    const colRef = doc(db, "categories", docId);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteDoc(colRef);
+        Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
+
   return (
     <div>
       <DashboardHeading title="Categories" desc="Manage your category">
@@ -93,9 +96,9 @@ const CategoryManage = () => {
                         navigate(`/manage/update-category?id=${category.id}`)
                       }
                     ></ActionEdit>
-                    {/* <ActionDelete
+                    <ActionDelete
                       onClick={() => handleDeleteCategory(category.id)}
-                    ></ActionDelete> */}
+                    ></ActionDelete>
                   </div>
                 </td>
               </tr>
