@@ -27,6 +27,7 @@ const CategoryUpdate = () => {
   });
   const [params] = useSearchParams();
   const categoryId = params.get("id");
+
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
@@ -41,12 +42,13 @@ const CategoryUpdate = () => {
     const colRef = doc(db, "categories", categoryId);
     await updateDoc(colRef, {
       name: values.name,
-      slug: slugify(values.slug || values.name, { lower: true }),
+      slug: slugify(values.slug || values.title, { lower: true }),
       status: Number(values.status),
     });
-    toast.success("Update category successfully!");
+    toast.success("Update category successfully");
     navigate("/manage/category");
   };
+
   if (!categoryId) return null;
   return (
     <div>
