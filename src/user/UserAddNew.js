@@ -2,23 +2,103 @@ import { Button } from "components/button";
 import { Radio } from "components/checkbox";
 import { Field } from "components/field";
 import FieldCheckboxes from "components/field/FieldCheckboxes";
+import ImageUpload from "components/image/ImageUpload";
 import { Input } from "components/input";
 import { Label } from "components/label";
+import { auth, db } from "firebase-app/firebase-config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import useFirebaseImage from "hooks/useFirebaseImage";
 import DashboardHeading from "module/dashboard/DashboardHeading";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import slugify from "slugify";
+import { userRole, userStatus } from "utils/constants";
 
 const UserAddNew = () => {
-  const { control } = useForm({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    formState: { isSubmitting, isValid },
+    reset,
+  } = useForm({
     mode: "onChange",
+    defaultValues: {
+      fullname: "",
+      email: "",
+      password: "",
+      username: "",
+      avatar: "",
+      status: userStatus.ACTIVE,
+      role: userRole.USER,
+      createdAt: new Date(),
+    },
   });
+  const {
+    handleSelectImage,
+    handleDeleteImage,
+    handleResetUpload,
+    image,
+    progress,
+  } = useFirebaseImage(setValue, getValues);
+  const handleCreateUser = async (values) => {
+    try {
+      if (!isValid) return;
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      await addDoc(collection(db, "users"), {
+        fullname: values.fullname,
+        email: values.email,
+        password: values.password,
+        username: slugify(values.username || values.fullname, {
+          lower: true,
+          replacement: " ",
+        }),
+        avatar: image,
+        status: Number(values.status),
+        role: Number(values.role),
+        createdAt: serverTimestamp(),
+      });
+      toast(`Create new user with email:${values.email} successfully`);
+      reset({
+        fullname: "",
+        email: "",
+        password: "",
+        username: "",
+        avatar: "",
+        status: userStatus.ACTIVE,
+        role: userRole.USER,
+        createdAt: new Date(),
+      });
+
+      handleResetUpload();
+    } catch (error) {
+      toast("Can not create new user!");
+    }
+  };
+  const watchStatus = watch("status");
+  const watchRole = watch("role");
+
   return (
     <div>
       <DashboardHeading
         title="New user"
         desc="Add new user to system"
       ></DashboardHeading>
-      <form>
+      <form onSubmit={handleSubmit(handleCreateUser)}>
+        <div className="w-[200px] h-[200px] mx-auto mb-10">
+          <ImageUpload
+            className="!rounded-full h-full"
+            onChange={handleSelectImage}
+            handleDeleteImage={handleDeleteImage}
+            progress={progress}
+            image={image}
+          ></ImageUpload>
+        </div>
+
         <div className="form-layout">
           <Field>
             <Label>Fullname</Label>
@@ -61,13 +141,28 @@ const UserAddNew = () => {
           <Field>
             <Label>Status</Label>
             <FieldCheckboxes>
-              <Radio name="status" control={control}>
+              <Radio
+                name="status"
+                control={control}
+                checked={Number(watchStatus) === userStatus.ACTIVE}
+                value={userStatus.ACTIVE}
+              >
                 Active
               </Radio>
-              <Radio name="status" control={control}>
+              <Radio
+                name="status"
+                control={control}
+                checked={Number(watchStatus) === userStatus.PENDING}
+                value={userStatus.PENDING}
+              >
                 Pending
               </Radio>
-              <Radio name="status" control={control}>
+              <Radio
+                name="status"
+                control={control}
+                checked={Number(watchStatus) === userStatus.BAN}
+                value={userStatus.BAN}
+              >
                 Banned
               </Radio>
             </FieldCheckboxes>
@@ -75,22 +170,41 @@ const UserAddNew = () => {
           <Field>
             <Label>Role</Label>
             <FieldCheckboxes>
-              <Radio name="role" control={control}>
+              <Radio
+                name="role"
+                control={control}
+                checked={Number(watchRole) === userRole.ADMIN}
+                value={userStatus.ADMIN}
+              >
                 Admin
               </Radio>
-              <Radio name="role" control={control}>
+              <Radio
+                name="role"
+                control={control}
+                checked={Number(watchRole) === userRole.MOD}
+                value={userRole.MOD}
+              >
                 Moderator
               </Radio>
-              <Radio name="role" control={control}>
-                Editor
-              </Radio>
-              <Radio name="role" control={control}>
+
+              <Radio
+                name="role"
+                control={control}
+                checked={Number(watchRole) === userRole.USER}
+                value={userRole.USER}
+              >
                 User
               </Radio>
             </FieldCheckboxes>
           </Field>
         </div>
-        <Button kind="primary" className="mx-auto w-[200px]">
+        <Button
+          type="submit"
+          kind="primary"
+          className="mx-auto w-[200px]"
+          isLoading={isSubmitting}
+          disabled={isSubmitting}
+        >
           Add new user
         </Button>
       </form>
