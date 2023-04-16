@@ -145,12 +145,21 @@ const Sidebar = () => {
         <img srcSet="/logo.png 2x" alt="" />
         <span>Monkey Blogging</span>
       </div>
-      {sidebarLinks.map((link) => (
-        <NavLink to={link.url} className="menu-item" key={link.title}>
-          <span className="menu-icon">{link.icon}</span>
-          <span className="menu-text">{link.title}</span>
-        </NavLink>
-      ))}
+      {sidebarLinks.map((link) => {
+        if (link.onClick)
+          return (
+            <div onClick={link.onClick} className="menu-item" key={link.title}>
+              <span className="menu-icon">{link.icon}</span>
+              <span className="menu-text">{link.title}</span>
+            </div>
+          );
+        return (
+          <NavLink to={link.url} className="menu-item" key={link.title}>
+            <span className="menu-icon">{link.icon}</span>
+            <span className="menu-text">{link.title}</span>
+          </NavLink>
+        );
+      })}
     </SidebarStyles>
   );
 };

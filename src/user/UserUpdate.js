@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { userRole, userStatus } from "utils/constants";
 
 const UserUpdate = () => {
   const {
@@ -39,24 +40,24 @@ const UserUpdate = () => {
   const { image, setImage, progress, handleSelectImage, handleDeleteImage } =
     useFirebaseImage(setValue, getValues, imageName, deleteAvatar);
   const { userInfo } = useAuth();
-  // const handleUpdateUser = async (values) => {
-  //   if (!isValid) return;
-  //   if (userInfo?.role !== userRole.ADMIN) {
-  //     Swal.fire("Failed", "You have no right to do this action", "warning");
-  //     return;
-  //   }
-  //   try {
-  //     const colRef = doc(db, "users", userId);
-  //     await updateDoc(colRef, {
-  //       ...values,
-  //       avatar: image,
-  //     });
-  //     toast.success("Update user information successfully!");
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Update user failed!");
-  //   }
-  // };
+  const handleUpdateUser = async (values) => {
+    if (!isValid) return;
+    if (userInfo?.role !== userRole.ADMIN) {
+      Swal.fire("Failed", "You have no right to do this action", "warning");
+      return;
+    }
+    try {
+      const colRef = doc(db, "users", userId);
+      await updateDoc(colRef, {
+        ...values,
+        avatar: image,
+      });
+      toast.success("Update user information successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Update user failed!");
+    }
+  };
 
   async function deleteAvatar() {
     const colRef = doc(db, "users", userId);
@@ -139,16 +140,16 @@ const UserUpdate = () => {
               <Radio
                 name="status"
                 control={control}
-                // checked={Number(watchStatus) === userStatus.ACTIVE}
-                // value={userStatus.ACTIVE}
+                checked={Number(watchStatus) === userStatus.ACTIVE}
+                value={userStatus.ACTIVE}
               >
                 Active
               </Radio>
               <Radio
                 name="status"
                 control={control}
-                // checked={Number(watchStatus) === userStatus.PENDING}
-                // value={userStatus.PENDING}
+                checked={Number(watchStatus) === userStatus.PENDING}
+                value={userStatus.PENDING}
               >
                 Pending
               </Radio>
@@ -168,24 +169,24 @@ const UserUpdate = () => {
               <Radio
                 name="role"
                 control={control}
-                // checked={Number(watchRole) === userRole.ADMIN}
-                // value={userRole.ADMIN}
+                checked={Number(watchRole) === userRole.ADMIN}
+                value={userRole.ADMIN}
               >
                 Admin
               </Radio>
               <Radio
                 name="role"
                 control={control}
-                // checked={Number(watchRole) === userRole.MOD}
-                // value={userRole.MOD}
+                checked={Number(watchRole) === userRole.MOD}
+                value={userRole.MOD}
               >
                 Moderator
               </Radio>
               <Radio
                 name="role"
                 control={control}
-                // checked={Number(watchRole) === userRole.USER}
-                // value={userRole.USER}
+                checked={Number(watchRole) === userRole.USER}
+                value={userRole.USER}
               >
                 User
               </Radio>

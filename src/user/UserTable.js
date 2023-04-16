@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-// import { userRole, userStatus } from "utils/constants";
+import { userRole, userStatus } from "utils/constants";
 
 const UserTable = () => {
   const [userList, setUserList] = useState([]);
@@ -22,59 +22,60 @@ const UserTable = () => {
           id: doc.id,
           ...doc.data(),
         });
+        console.log(results);
       });
       setUserList(results);
     });
   }, []);
-  // const renderRoleLabel = (role) => {
-  //   switch (role) {
-  //     case userRole.ADMIN:
-  //       return "Admin";
-  //     case userRole.MOD:
-  //       return "Moderator";
-  //     case userRole.USER:
-  //       return "User";
+  const renderRoleLabel = (role) => {
+    switch (role) {
+      case userRole.ADMIN:
+        return "Admin";
+      case userRole.MOD:
+        return "Moderator";
+      case userRole.USER:
+        return "User";
 
-  //     default:
-  //       break;
-  //   }
-  // };
-  // const renderLabelStatus = (status) => {
-  //   switch (status) {
-  //     case userStatus.ACTIVE:
-  //       return <LabelStatus type="success">Active</LabelStatus>;
-  //     case userStatus.PENDING:
-  //       return <LabelStatus type="warning">Pending</LabelStatus>;
-  //     case userStatus.BAN:
-  //       return <LabelStatus type="danger">Rejected</LabelStatus>;
+      default:
+        break;
+    }
+  };
+  const renderLabelStatus = (status) => {
+    switch (status) {
+      case userStatus.ACTIVE:
+        return <LabelStatus type="success">Active</LabelStatus>;
+      case userStatus.PENDING:
+        return <LabelStatus type="warning">Pending</LabelStatus>;
+      case userStatus.BAN:
+        return <LabelStatus type="danger">Rejected</LabelStatus>;
 
-  //     default:
-  //       break;
-  //   }
-  // };
+      default:
+        break;
+    }
+  };
   const { userInfo } = useAuth();
-  // const handleDeleteUser = async (user) => {
-  //   if (userInfo?.role !== userRole.ADMIN) {
-  //     Swal.fire("Failed", "You have no right to do this action", "warning");
-  //     return;
-  //   }
-  //   const colRef = doc(db, "users", user.id);
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "You won't be able to revert this!",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#3085d6",
-  //     cancelButtonColor: "#d33",
-  //     confirmButtonText: "Yes, delete it!",
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       await deleteDoc(colRef);
-  //       toast.success("Delete user successfully");
-  //       Swal.fire("Deleted!", "The user has been deleted.", "success");
-  //     }
-  //   });
-  // };
+  const handleDeleteUser = async (user) => {
+    if (userInfo?.role !== userRole.ADMIN) {
+      Swal.fire("Failed", "You have no right to do this action", "warning");
+      return;
+    }
+    const colRef = doc(db, "users", user.id);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteDoc(colRef);
+        toast.success("Delete user successfully");
+        Swal.fire("Deleted!", "The user has been deleted.", "success");
+      }
+    });
+  };
   const renderUserItem = (user) => {
     return (
       <tr key={user.id}>
@@ -98,14 +99,14 @@ const UserTable = () => {
         </td>
         <td>{user?.username}</td>
         <td>{user?.email.slice(0, 5) + "..."}</td>
-        {/* <td>{renderLabelStatus(Number(user?.status))}</td>
-        <td>{renderRoleLabel(Number(user.role))}</td> */}
+        <td>{renderLabelStatus(Number(user?.status))}</td>
+        <td>{renderRoleLabel(Number(user.role))}</td>
         <td>
           <div className="flex items-center text-gray-500 gap-x-3">
             <ActionEdit
               onClick={() => navigate(`/manage/update-user?id=${user.id}`)}
             ></ActionEdit>
-            {/* <ActionDelete onClick={() => handleDeleteUser(user)}></ActionDelete> */}
+            <ActionDelete onClick={() => handleDeleteUser(user)}></ActionDelete>
           </div>
         </td>
       </tr>
