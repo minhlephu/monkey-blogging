@@ -55,10 +55,10 @@ const UserTable = () => {
   };
   const { userInfo } = useAuth();
   const handleDeleteUser = async (user) => {
-    if (userInfo?.role !== userRole.ADMIN) {
-      Swal.fire("Failed", "You have no right to do this action", "warning");
-      return;
-    }
+    // if (userInfo?.role !== userRole.ADMIN) {
+    //   Swal.fire("Failed", "You have no right to do this action", "warning");
+    //   return;
+    // }
     const colRef = doc(db, "users", user.id);
     Swal.fire({
       title: "Are you sure?",

@@ -55,26 +55,7 @@ const PostFeatureItemStyles = styled.div`
   }
 `;
 const PostFeatureItem = ({ data }) => {
-  const [category, setCategory] = useState("");
-  const [user, setUser] = useState("");
-  useEffect(() => {
-    async function fetch() {
-      const docRef = doc(db, "categories", data.categoryId);
-      const docSnap = await getDoc(docRef);
-      setCategory(docSnap.data());
-    }
-    fetch();
-  }, [data.categoryId]);
-  useEffect(() => {
-    async function fetchUser() {
-      const docRef = doc(db, "users", data.userId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.data) {
-        setUser(docSnap.data());
-      }
-    }
-    fetchUser();
-  }, [data.userId]);
+  const { category, user } = data;
   const date = data?.createAt?.seconds
     ? new Date(data?.createAt?.seconds * 1000)
     : new Date();

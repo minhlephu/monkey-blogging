@@ -16,6 +16,7 @@ import UserManage from "user/UserManage";
 import UserAddNew from "user/UserAddNew";
 import UserUpdate from "user/UserUpdate";
 import UserProfile from "user/UserProfile";
+import PostUpdate from "module/post/PostUpdate";
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
             <Route
               path="/manage/add-post"
               element={<PostAddNew></PostAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-post"
+              element={<PostUpdate></PostUpdate>}
             ></Route>
             <Route
               path="/manage/category"

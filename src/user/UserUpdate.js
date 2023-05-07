@@ -85,7 +85,7 @@ const UserUpdate = () => {
         title="Update user"
         desc="Update user information"
       ></DashboardHeading>
-      <form onSubmit={handleSubmit()}>
+      <form onSubmit={handleSubmit(handleUpdateUser)}>
         <div className="w-[200px] h-[200px] mx-auto rounded-full mb-10">
           <ImageUpload
             className="!rounded-full h-full"
@@ -156,8 +156,8 @@ const UserUpdate = () => {
               <Radio
                 name="status"
                 control={control}
-                // checked={Number(watchStatus) === userStatus.BAN}
-                // value={userStatus.BAN}
+                checked={Number(watchStatus) === userStatus.BAN}
+                value={userStatus.BAN}
               >
                 Banned
               </Radio>

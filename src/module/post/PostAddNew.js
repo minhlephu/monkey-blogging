@@ -15,6 +15,8 @@ import Toggle from "components/toggle/Toggle";
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -24,6 +26,7 @@ import { db } from "firebase-app/firebase-config";
 import { result } from "lodash";
 import { useAuth } from "contexts/auth-context";
 import { toast } from "react-toastify";
+import FieldCheckboxes from "components/field/FieldCheckboxes";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -36,8 +39,9 @@ const PostAddNew = () => {
       slug: "",
       status: 2,
       hot: false,
-      categoryId: "",
       image: "",
+      category: {},
+      user: {},
     },
   });
   const watchStatus = watch("status");
@@ -52,6 +56,25 @@ const PostAddNew = () => {
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
   const [loading, setLoading] = useState(false);
+  const [categoryDetails, setCategoryDetails] = useState({});
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!userInfo.email) return;
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", userInfo.email)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        setValue("user", {
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+    }
+    fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo.email]);
   const addPostHandler = async (values) => {
     setLoading(true);
     try {
@@ -71,9 +94,10 @@ const PostAddNew = () => {
         title: "",
         slug: "",
         status: 2,
-        categoryId: "",
         hot: false,
         image: "",
+        category: {},
+        user: {},
       });
       handleResetUpload();
       setSelectCategory({});
@@ -104,8 +128,13 @@ const PostAddNew = () => {
     document.title = "Monkey Blogging - Add new post";
   }, []);
 
-  const handleSelectOption = (item) => {
-    setValue("categoryId", item.id);
+  const handleClickOption = async (item) => {
+    const colRef = doc(db, "categories", item.id);
+    const docData = await getDoc(colRef);
+    setValue("category", {
+      id: docData.id,
+      ...docData.data(),
+    });
     setSelectCategory(item);
   };
   return (
@@ -150,7 +179,7 @@ const PostAddNew = () => {
                   categories.map((item) => (
                     <Dropdown.Option
                       key={item.id}
-                      onClick={() => handleSelectOption(item)}
+                      onClick={() => handleClickOption(item)}
                     >
                       {item.name}
                     </Dropdown.Option>
@@ -174,12 +203,12 @@ const PostAddNew = () => {
           </Field>
           <Field>
             <Label>Status</Label>
-            <div className="flex items-center gap-x-5">
+            <FieldCheckboxes>
               <Radio
                 name="status"
                 control={control}
                 checked={Number(watchStatus) === postStatus.APPROVED}
-                value={1}
+                value={postStatus.APPROVED}
               >
                 Approved
               </Radio>
@@ -187,7 +216,7 @@ const PostAddNew = () => {
                 name="status"
                 control={control}
                 checked={Number(watchStatus) === postStatus.PENDING}
-                value={2}
+                value={postStatus.PENDING}
               >
                 Pending
               </Radio>
@@ -195,11 +224,11 @@ const PostAddNew = () => {
                 name="status"
                 control={control}
                 checked={Number(watchStatus) === postStatus.REJECTED}
-                value={3}
+                value={postStatus.REJECTED}
               >
                 Reject
               </Radio>
-            </div>
+            </FieldCheckboxes>
           </Field>
 
           <Field></Field>

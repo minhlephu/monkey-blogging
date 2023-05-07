@@ -1,3 +1,4 @@
+import { useAuth } from "contexts/auth-context";
 import {
   deleteObject,
   getDownloadURL,
@@ -6,12 +7,24 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { useState } from "react";
+import Swal from "sweetalert2";
+import { userRole } from "utils/constants";
 
-export default function useFirebaseImage(setValue, getValues) {
+export default function useFirebaseImage(
+  setValue,
+  getValues,
+  imageName = null,
+  cb = null
+) {
+  const { userInfo } = useAuth();
   const [progress, setProgress] = useState(0);
   const [image, setImage] = useState("");
   if (!setValue || !getValues) return;
   const handleUploadImage = (file) => {
+    // if (userInfo?.role !== userRole.ADMIN) {
+    //   Swal.fire("Failed", "You have no right to do this action", "warning");
+    //   return;
+    // }
     const storage = getStorage();
     const storageRef = ref(storage, "images/" + file.name);
     const uploadTask = uploadBytesResumable(storageRef, file);
@@ -33,7 +46,8 @@ export default function useFirebaseImage(setValue, getValues) {
         }
       },
       (error) => {
-        console.log("Erorr");
+        console.log("Error");
+        setImage("");
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -47,21 +61,30 @@ export default function useFirebaseImage(setValue, getValues) {
     const file = e.target.files[0];
     if (!file) return;
     setValue("image_name", file.name);
-    console.log(file.name);
     handleUploadImage(file);
   };
+
   const handleDeleteImage = () => {
+    if (userInfo?.role !== userRole.ADMIN) {
+      Swal.fire("Failed", "You have no right to do this action", "warning");
+      return;
+    }
     const storage = getStorage();
-    const imageRef = ref(storage, "images/" + getValues("image_name"));
+    const imageRef = ref(
+      storage,
+      "images/" + (imageName || getValues("image_name"))
+    );
     deleteObject(imageRef)
       .then(() => {
         console.log("Remove image successfully");
         setImage("");
         setProgress(0);
+        cb && cb();
       })
       .catch((error) => {
         console.log("handleDeleteImage ~ error", error);
         console.log("Can not delete image");
+        setImage("");
       });
   };
   const handleResetUpload = () => {
@@ -70,6 +93,7 @@ export default function useFirebaseImage(setValue, getValues) {
   };
   return {
     image,
+    setImage,
     handleResetUpload,
     progress,
     handleSelectImage,
