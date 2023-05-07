@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import PageNotFound from "./NotFoundPage";
 import parse from "html-react-parser";
+import AuthorBox from "components/author/AuthorBox";
 const PostDetailsPageStyles = styled.div`
   padding-bottom: 100px;
   .post {
@@ -119,6 +120,7 @@ const PostDetailsPage = () => {
   }, [slug]);
   if (!slug) return <PageNotFound></PageNotFound>;
   if (!postInfo.title) return null;
+  const { user } = postInfo;
 
   return (
     <PostDetailsPageStyles>
@@ -139,23 +141,7 @@ const PostDetailsPage = () => {
           </div>
           <div className="post-content">
             <div className="entry-content">{parse(postInfo.content || "")}</div>
-            <div className="author">
-              <div className="author-image">
-                <img
-                  src="https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
-                  alt=""
-                />
-              </div>
-              <div className="author-content">
-                <h3 className="author-name">Evondev</h3>
-                <p className="author-desc">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Dignissimos non animi porro voluptates quibusdam optio nulla
-                  quis nihil ipsa error delectus temporibus nesciunt, nam
-                  officiis adipisci suscipit voluptate eum totam!
-                </p>
-              </div>
-            </div>
+            <AuthorBox userId={user.id}></AuthorBox>
           </div>
           <div className="post-related">
             <Heading>Bài viết liên quan</Heading>

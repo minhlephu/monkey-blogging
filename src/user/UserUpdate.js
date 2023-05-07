@@ -42,10 +42,10 @@ const UserUpdate = () => {
   const { userInfo } = useAuth();
   const handleUpdateUser = async (values) => {
     if (!isValid) return;
-    if (userInfo?.role !== userRole.ADMIN) {
-      Swal.fire("Failed", "You have no right to do this action", "warning");
-      return;
-    }
+    // if (userInfo?.role !== userRole.ADMIN) {
+    //   Swal.fire("Failed", "You have no right to do this action", "warning");
+    //   return;
+    // }
     try {
       const colRef = doc(db, "users", userId);
       await updateDoc(colRef, {

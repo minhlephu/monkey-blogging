@@ -22,7 +22,6 @@ const UserTable = () => {
           id: doc.id,
           ...doc.data(),
         });
-        console.log(results);
       });
       setUserList(results);
     });
