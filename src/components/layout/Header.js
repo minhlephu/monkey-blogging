@@ -22,8 +22,9 @@ const HeaderStyles = styled.header`
   .header-main {
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
-  .logo {
+  s .logo {
     display: block;
     max-width: 50px;
   }
@@ -62,11 +63,11 @@ const HeaderStyles = styled.header`
     margin-left: 32px;
   }
 `;
-function getLastName(name) {
-  if (!name) return "User";
-  const length = name.split(" ").length;
-  return name.split(" ")[length - 1];
-}
+// function getLastName(name) {
+//   if (!name) return "User";
+//   const length = name.split(" ").length;
+//   return name.split(" ")[length - 1];
+// }
 const Header = () => {
   const { userInfo } = useAuth();
 
@@ -87,7 +88,7 @@ const Header = () => {
             ))}
           </ul>
 
-          <div className="search">
+          {/* <div className="search">
             <input
               type="text"
               className="search-input"
@@ -123,23 +124,27 @@ const Header = () => {
                 />
               </svg>
             </span>
-          </div>
+          </div> */}
           {!userInfo ? (
             <Button
-              to="/sign-up"
+              to="/sign-in"
               type="button"
               style={{ maxWidth: 200 }}
               height="56px"
               className="header-button"
             >
-              SignUp
+              Login
             </Button>
           ) : (
             <div className="header-auth">
-              <span>Welcome back, </span>
-              <strong className="text-primary">
-                {getLastName(userInfo?.displayName)}
-              </strong>
+              <Button
+                type="button"
+                height="56px"
+                className="header-button"
+                to="/dashboard"
+              >
+                Dashboard
+              </Button>
             </div>
           )}
         </div>
