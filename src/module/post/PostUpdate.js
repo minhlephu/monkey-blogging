@@ -31,11 +31,13 @@ import "react-quill/dist/quill.snow.css";
 import { useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import slugify from "slugify";
-import { postStatus } from "utils/constants";
+import { postStatus, userRole } from "utils/constants";
+import { useAuth } from "contexts/auth-context";
+import Swal from "sweetalert2";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const PostUpdate = () => {
-  // const { userInfo } = useAuth();
+  const { userInfo } = useAuth();
   const [params] = useSearchParams();
   const postId = params.get("id");
   const [content, setContent] = useState("");
@@ -54,16 +56,16 @@ const PostUpdate = () => {
   const imageName = getValues("image_name");
   const { image, setImage, progress, handleSelectImage, handleDeleteImage } =
     useFirebaseImage(setValue, getValues, imageName);
-  // async function deletePostImage() {
-  //   if (userInfo?.role !== userRole.ADMIN) {
-  //     Swal.fire("Failed", "You have no right to do this action", "warning");
-  //     return;
-  //   }
-  //   const colRef = doc(db, "users", postId);
-  //   await updateDoc(colRef, {
-  //     avatar: "",
-  //   });
-  // }
+  async function deletePostImage() {
+    if (userInfo?.role !== userRole.ADMIN) {
+      Swal.fire("Failed", "You have no right to do this action", "warning");
+      return;
+    }
+    const colRef = doc(db, "users", postId);
+    await updateDoc(colRef, {
+      avatar: "",
+    });
+  }
   useEffect(() => {
     setImage(imageUrl);
   }, [imageUrl, setImage]);
