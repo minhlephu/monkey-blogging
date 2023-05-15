@@ -12,6 +12,7 @@ import styled from "styled-components";
 import PageNotFound from "./NotFoundPage";
 import parse from "html-react-parser";
 import AuthorBox from "components/author/AuthorBox";
+import PostRelated from "module/post/PostRelated";
 const PostDetailsPageStyles = styled.div`
   padding-bottom: 100px;
   .post {
@@ -118,9 +119,13 @@ const PostDetailsPage = () => {
     }
     fetchData();
   }, [slug]);
+  useEffect(() => {
+    window.scroll(0, 0);
+  }, [slug]);
   if (!slug) return <PageNotFound></PageNotFound>;
   if (!postInfo.title) return null;
   const { user } = postInfo;
+  console.log(postInfo);
 
   return (
     <PostDetailsPageStyles>
@@ -143,15 +148,7 @@ const PostDetailsPage = () => {
             <div className="entry-content">{parse(postInfo.content || "")}</div>
             <AuthorBox userId={user.id}></AuthorBox>
           </div>
-          <div className="post-related">
-            <Heading>Bài viết liên quan</Heading>
-            <div className="grid-layout grid-layout--primary">
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-            </div>
-          </div>
+          <PostRelated categoryId={postInfo?.category?.id}></PostRelated>
         </div>
       </Layout>
     </PostDetailsPageStyles>
