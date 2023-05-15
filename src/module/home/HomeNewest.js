@@ -7,10 +7,11 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import PostItem from "module/post/PostItem";
 import PostNewestItem from "module/post/PostNewestItem";
 import PostNewestLarge from "module/post/PostNewestLarge";
 import React, { useEffect, useState } from "react";
+import { v4 } from "uuid";
+
 import styled from "styled-components";
 
 const HomeNewestStyles = styled.div`
@@ -58,16 +59,11 @@ const HomeNewest = () => {
         <div className="layout">
           <PostNewestLarge data={first}></PostNewestLarge>
           <div className="sidebar">
-            <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
+            {other.length > 0 &&
+              other.map((item) => (
+                <PostNewestItem key={v4()} data={item}></PostNewestItem>
+              ))}
           </div>
-        </div>
-        <div className="grid-layout grid-layout--primary">
-          <PostItem></PostItem>
-          <PostItem></PostItem>
-          <PostItem></PostItem>
-          <PostItem></PostItem>
         </div>
       </div>
     </HomeNewestStyles>

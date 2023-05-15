@@ -141,7 +141,7 @@ const PostDetailsPage = () => {
                 {postInfo.category?.name}
               </PostCategory>
               <h1 className="post-heading">{postInfo.title}</h1>
-              <PostMeta></PostMeta>
+              {/* <PostMeta></PostMeta> */}
             </div>
           </div>
           <div className="post-content">
